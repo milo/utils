@@ -19,7 +19,7 @@ namespace Milo\Utils;
  */
 class AliasExpander
 {
-	/** @var self  last created self instance */
+	/** @var self  singleton self instance */
 	private static $instance;
 
 	/** @var string  cache dir path */
@@ -40,7 +40,7 @@ class AliasExpander
 
 
 	/**
-	 * @throws \LogicException  when more then one instance is created.
+	 * @throws \LogicException  when more then one instance is created
 	 */
 	final public function __construct()
 	{
@@ -108,8 +108,8 @@ class AliasExpander
 	 * @param  string  class alias
 	 * @param  int  how deep is wrapped this method call
 	 * @return string
-	 * @throws \RuntimeException  when cannot find an origin of call in backtrace
-	 * @throws \LogicException  when empty class alias name passed
+	 * @throws \RuntimeException  when origin of call cannot be found in backtrace
+	 * @throws \LogicException  when empty alias name passed
 	 */
 	final public static function expand($alias, $depth = 0)
 	{
@@ -134,10 +134,10 @@ class AliasExpander
 	 * @return string
 	 * @throws \LogicException  when empty class alias name passed
 	 */
-	final public static function expandExplicit($alias, $file, $callLine = 0)
+	final public static function expandExplicit($alias, $file, $line = 0)
 	{
 		if (empty($alias)) {
-			throw new \LogicException('Class name must not be empty.');
+			throw new \LogicException('Alias name must not be empty.');
 		}
 
 		if ($alias[0] === '\\') { // already fully qualified
@@ -157,9 +157,9 @@ class AliasExpander
 			do {
 				list($nsLine, $data) = $next;
 				$next = each($parsed);
-			} while ($next !== FALSE && $next[0] < $callLine);
+			} while ($next !== FALSE && $next[0] < $line);
 
-			if (isset($data['aliases'][$lAlias]) && $callLine > $data['aliases'][$lAlias][1]) {
+			if (isset($data['aliases'][$lAlias]) && $line > $data['aliases'][$lAlias][1]) {
 				$return = $data['aliases'][$lAlias][0] . $suffix;
 			} else {
 				$return = $data['namespace'] === '' ? $alias : $data['namespace'] . '\\' . $alias;
@@ -206,7 +206,7 @@ class AliasExpander
 
 	/**
 	 * Store data to cache.
-	 * @param  string
+	 * @param  string  path to parsed PHP file
 	 * @param  mixed
 	 * @return self
 	 */
@@ -227,7 +227,7 @@ class AliasExpander
 
 
 	/**
-	 * @param  string
+	 * @param  string  path to parsed PHP file
 	 * @return string
 	 */
 	private function cacheFileFor($file)

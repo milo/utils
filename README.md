@@ -43,7 +43,7 @@ AliasExpander::expandExplicit('NS\Alias', '/dir/file.php', 231);
 ```
 
 Because this class is a workaround in principle, there are some limitations:
-- Code in one line like `namespace Name\Space; use Foo as F; namespace Second;` may leads to wrong expanding. It is not so easy to implement it because PHP tokenizer provides only token's line, but not the column. This can be a problem in minified code.
+- One line code like `namespace First; AliasExpander::expand('Foo'); namespace Second;` may leads to wrong expanding. It is not so easy to implement it because PHP tokenizer and debug_backtrace() provides only line number, but not the column. This can be a problem in minified code.
 - Keywords `self`, `static` and `parent` are not expanded as in PHP 5.5, but this can be easily solved by `__CLASS__`, `get_called_class()` and `get_parent_class()` instead of AliasExpander using.
 
 ------
