@@ -9,7 +9,7 @@ All classes are defined in `Milo\Utils` namespace.
 
 [AliasExpander](https://github.com/milo/utils/blob/master/Utils/AliasExpander.php)
 ----------------------------------------------------------------------------------
-It is a tool for run-time class alias expanding to its fully qualified name. In brief, it is a workaround for missing `::class` constant from PHP 5.5 in PHP 5.3+.
+It is a tool for run-time class alias expanding to its fully qualified name. In brief, it is a workaround for missing `::class` constant from PHP 5.5 in PHP 5.3+ and a helper for annotations processing.
 
 ```php
 # Ordinary 'use' usage in namespaced code. But how to expand alias to full class name?
@@ -38,11 +38,12 @@ AliasExpander::getInstance()->setExistsCheck(TRUE);
 AliasExpander::getInstance()->setExistsCheck(E_USER_WARNING);
 
 
-# Sometimes may be handy expand alias in explicitly specified file and line context.
-AliasExpander::expandExplicit('NS\Alias', '/dir/file.php', 231);
+# Expanding alias in explicitly specified file and line context is useful for annotations processing.
+$method = new ReflectionMethod($object, 'method');
+AliasExpander::expandExplicit('NS\Alias', $method->getFileName(), $method->getStartLine());
 ```
 
-Because this class is a workaround in principle, there are some limitations:
+There are some limitations:
 - One line code like `namespace First; AliasExpander::expand('Foo'); namespace Second;` may leads to wrong expanding. It is not so easy to implement it because PHP tokenizer and debug_backtrace() provides only line number, but not the column. This can be a problem in minified code.
 - Keywords `self`, `static` and `parent` are not expanded as in PHP 5.5, but this can be easily solved by `__CLASS__`, `get_called_class()` and `get_parent_class()` instead of AliasExpander using.
 
