@@ -59,19 +59,23 @@ There are some limitations:
 Helper for conversion of PostgreSQL arrays to PHP array and vice versa.
 
 ```php
-# From PHP to PostgreSQL
-$array = array('a', 'b', 'c');
-PgsqlArray::toStringLiteral($array);  #  {"a","b","c"}
-PgsqlArray::toSql($array);            # '{"a","b","c"}'
+# PHP --> PostgreSQL
+$array = array('a', 'b', 'c', NULL);
+PgsqlArray::toStringLiteral($array);  #  {"a","b","c",NULL}
+PgsqlArray::toSql($array);            # '{"a","b","c",NULL}'
 
 
-# From PostgreSQL to PHP
-$type = PgsqlArray::TYPE_INTEGER;  # or use pg_field_type(), e.g. _int8
-PgsqlArray::fromString('{1,2,NULL}', $type);  # array(1, 2, NULL);
+# PostgreSQL --> PHP, result array(1, 2, NULL)
+PgsqlArray::fromString('{1,2,NULL}', PgsqlArray::TYPE_INTEGER); # or
+PgsqlArray::fromString('{1,2,NULL}', pg_field_type(...));
 
 
-# Timestamps supported
+# Timestamps supported, result array(object DateTime(...))
 PgsqlArray::fromString('{"1920-05-06 16:24:00+01"}', PgsqlArray::TYPE_TIMESTAMP_TZ);
+
+
+# Multidimensional arrays supported, result array(array(1, 2), array(3, 4), array(5, 6))
+PgsqlArray::fromString('{{1,2},{3,4},{5,6}}', PgsqlArray::TYPE_INTEGER);
 ```
 
 `Note` Very big integers or floats are left as string when cannot be represented in PHP native type.
