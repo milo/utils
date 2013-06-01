@@ -50,6 +50,8 @@ There are some limitations:
 - One line code like `namespace First; AliasExpander::expand('Foo'); namespace Second;` may leads to wrong expanding. It is not so easy to implement it because PHP tokenizer and debug_backtrace() provides only line number, but not the column. This can be a problem in minified code.
 - Keywords `self`, `static` and `parent` are not expanded as in PHP 5.5, but this can be easily solved by `__CLASS__`, `get_called_class()` and `get_parent_class()` instead of AliasExpander using.
 
+You can find this class in own repository [alias-expander](https://github.com/milo/alias-expander).
+
 
 ------
 
