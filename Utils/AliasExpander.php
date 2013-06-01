@@ -196,7 +196,14 @@ class AliasExpander
 			&& is_file($cacheFile = $this->cacheFileFor($file))
 			&& filemtime($file) < filemtime($cacheFile)
 		) {
-			return $this->cache[$file] = require $cacheFile;
+			if (($fd = fopen($cacheFile, 'r')) === FALSE || flock($fd, LOCK_SH) === FALSE) {
+				return NULL;
+			}
+			$cached = require $cacheFile;
+			flock($fd, LOCK_UN);
+			fclose($fd);
+
+			return $this->cache[$file] = $cached;
 		}
 
 		return NULL;
@@ -217,7 +224,8 @@ class AliasExpander
 		if ($this->cacheDir !== NULL) {
 			file_put_contents(
 				$this->cacheFileFor($file),
-				"<?php // AliasExpander cache for $file\n\nreturn " . var_export($data, TRUE) . ";\n"
+				"<?php // AliasExpander cache for $file\n\nreturn " . var_export($data, TRUE) . ";\n",
+				LOCK_EX
 			);
 		}
 
